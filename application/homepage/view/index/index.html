@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<title>先知眼</title>
+	<link rel="shortcut icon" href="http://xianzhiyan.com/static/ico/favicon.png">
+	<link rel="stylesheet" href="http://xianzhiyan.com/static/homepage/css/common.css">
+	<link rel="stylesheet" href="http://xianzhiyan.com/static/bootstrap/css/bootstrap.min.css">
+    <!-- Javascript -->
+    <script src="http://xianzhiyan.com/static/js/jquery-1.11.1.min.js"></script>
+    <script src="http://xianzhiyan.com/static/bootstrap/js/bootstrap.min.js"></script>
+	<style>
+	</style>
+</head>
+<body style="background-image: url(http://xianzhiyan.com/static/homepage/img/aplex.jpg)">
+	<div id="wrapper">
+		<header id="header">
+			<nav class="headNavs fr tr">
+			<?php 
+				if($level<3)
+				{
+					echo  '<a href="/bms/index/index"><span class="s-icon s-icon-treasure"></span><span>个人中心</span></a>';
+				}else
+				{
+					echo '<span class="s-icon s-icon-treasure"></span><span> </span>';
+				}
+			?>
+			</nav>
+		</header>
+		<div class="content tc">
+			<p class="logo">
+				<img width="270" height="129"
+					src="http://xianzhiyan.com/static/homepage/img/xianzhi.png"
+					alt="logo">
+			</p>
+			<div class="searchBox" id="searchBox" data-toggle="popover" title="黑名单信息"  data-placement="bottom" data-content="安全" data-html="true" >
+				<input type="text" class="searchIpt f14" name="wd" maxlength="100" style="height:38px;" id="search"
+					onFocus="dismissInfo();">
+				<input type="button" onclick="searchblack();" class="btn btn-info"
+					value="先知一下">
+			</div>
+			<div class="mainContents oh"></div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+	function searchblack(){
+		var info = $('#search').val().trim();
+		var blackListInfo = "";
+		//字符无数据
+		if(info.length == 0)
+			return;
+		
+		$('#searchBox').popover('hide');
+		$.post("/homepage/index/search",{'info':info}, function(data){
+			if(jQuery.isEmptyObject(data)){
+				$('#searchBox').attr('data-content',"此用户未录入先知系统").popover('show');
+			}else{
+				blackListInfo = blackListInfo +
+				'<table class="table table-bordered">'+
+				'<tr> <td style="text-align:center;">淘宝ID</td>'+
+				' <td style="text-align:center;">支付宝账号</td>'+
+				' <td>收货地址</td> '+
+				'<td>收货手机号</td>  '+
+				'<td>恶意行径</td> '+
+				'<td>恶意类目</td> '+
+				'<td>录入日期</td> '+
+				'<td>录入用户</td></tr>';
+				for(var i in data){
+					blackListInfo = blackListInfo + 
+					'<tr>'+
+						'<td style="text-align:center;">'+data[i].taobao_id+'</td>'+
+						'<td style="text-align:center;">'+data[i].zhifubao_id+'</td>'+
+						'<td style="text-align:center;WORD-WRAP: break-word; width:250px">'+data[i].addr+data[i].addr+'</td>'+
+						'<td style="text-align:center;">'+data[i].phone_num+'</td>'+
+						'<td style="text-align:center;">'+data[i].bad_behavior_detail+'</td>'+
+						'<td style="text-align:center;">'+data[i].bad_type_detail+'</td>'+
+						'<td style="text-align:center;">'+data[i].create_time+'</td>'+
+						'<td style="text-align:center;">'+data[i].username+'</td>'+
+					'</tr>'
+				}
+				blackListInfo = blackListInfo + '</table>'
+				$('#searchBox').attr('data-content',blackListInfo).popover('show');
+			}
+		});
+	}
+	function dismissInfo(){
+		$('#searchBox').popover('hide');	
+	}
+</script>
+</html>

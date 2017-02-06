@@ -1,0 +1,259 @@
+﻿﻿﻿<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<script type="text/javascript" src="lib/PIE_IE678.js"></script>
+<![endif]-->
+<link rel="shortcut icon" href="http://xianzhiyan.com/static/ico/favicon.png">
+<link rel="stylesheet" type="text/css" href="http://xianzhiyan.com/static/h-ui/css/H-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="http://xianzhiyan.com/static/h-ui.admin/css/H-ui.admin.css" />
+<link rel="stylesheet" type="text/css" href="http://xianzhiyan.com/static/lib/Hui-iconfont/1.0.7/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="http://xianzhiyan.com/static/lib/icheck/icheck.css" />
+<link rel="stylesheet" type="text/css" href="http://xianzhiyan.com/static/h-ui.admin/skin/default/skin.css" id="skin" />
+<link rel="stylesheet" type="text/css" href="http://xianzhiyan.com/static/h-ui.admin/css/style.css" />
+
+<!--[if IE 6]>
+<script type="text/javascript" src="http://lib.h-ui.net/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<title>用户管理</title>
+</head>
+<body>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 黑名单模块 <span class="c-gray en">&gt;</span> 黑名单人员 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+	<div class="text-c"> 日期范围：
+	<input type="text" onfocus="WdatePicker({maxDate:'#F{ $dp.$D(\'datemax\')||\'%y-%M-%d\'}'})" id="datemin" class="input-text Wdate" style="width:120px;" value="{$beginTime}">
+		<input type="text" onfocus="WdatePicker({minDate:'#F{ $dp.$D(\'datemin\')}',maxDate:'%y-%M-%d'})" id="datemax" class="input-text Wdate" style="width:120px;" value="{$endTime}">
+		<input type="text" class="input-text" style="width:250px" placeholder="输入黑名单的淘宝ID、支付宝账号" id="acountInfo" name="acountInfo" value="{$acountInfo}">
+		<button type="button" class="btn btn-success radius" onclick="searchBlacker();"><i class="Hui-iconfont">&#xe665;</i> 搜索黑名单</button>
+	</div>
+	<div class="cl pd-5 bg-1 bk-gray mt-20"> 
+		<span class="l">
+			{equal name="level" value="1"}
+			<a href="javascript:;" onclick="checkBlacker_del()" class="btn btn-danger radius">
+				<i class="Hui-iconfont">&#xe6e2;</i> 批量删除
+			</a> 
+			{/equal}
+			<a href="javascript:;" onclick="blacker_addpage('添加黑名单','addpage.html','','510')" class="btn btn-primary radius">
+				<i class="Hui-iconfont">&#xe600;</i> 添加黑名单
+			</a>
+		</span> 
+		<span class="r" >共有数据：<strong>{$list->total()}</strong> 条</span>
+	</div>
+	<div class="mt-20">
+		<table class="table table-border table-bordered table-hover table-bg table-sort">
+			<thead>
+				<tr class="text-c">
+					<th width="25"><input type="checkbox" name="" value=""></th>
+					<th width="80">淘宝ID</th>
+					<th width="80">支付宝账号</th>
+					<th width="">收货地址</th>
+					<th width="90">收货手机号</th>
+					<th width="90">恶意行径</th>
+					<th width="90">恶意类目</th>
+					<th width="130">录入日期</th>
+					<th width="90">录入用户</th>
+					<th width="100">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{volist name="list" id="blacker"}
+					<tr class="text-c">
+					<td><input type="checkbox" value="{$blacker.uid}" name="id"></td>
+					<td>{$blacker.taobao_id}</td>
+					<td>{$blacker.zhifubao_id}</td>
+					<!-- <td>
+						<u style="cursor:pointer" class="text-primary" onclick="member_show('张三','member-show.html','10001','360','400')">张三</u>
+					</td> -->
+					<td>{$blacker.addr}</td>
+					<td>{$blacker.phone_num}</td>
+					<td>{$blacker.bad_behavior_info.bad_behavior_detail}</td>
+					<td>{$blacker.bad_type_info.bad_type_detail}</td>
+					<!--  class="text-l" -->
+	
+					<td>{$blacker.create_time}</td>
+					<td>{$blacker.admin_info.username}</td>
+					<!-- <td class="td-status"><span class="label label-success radius">已启用</span></td> -->
+					<td class="td-manage">
+						<!-- <a style="text-decoration:none" onClick="member_stop(this,'10001')" href="javascript:;" title="停用">
+							<i class="Hui-iconfont">&#xe631;</i>
+						</a>  -->
+						<a title="编辑" href="javascript:;" onclick="blacker_editpage('编辑','/bms/black/editPage?uid={$blacker.uid}',{$blacker.uid},'','510')" class="ml-5" style="text-decoration:none">
+							<i class="Hui-iconfont">&#xe6df;</i>
+						</a> 
+						{equal name="level" value="1"}
+						<a title="删除" href="javascript:;" onclick="blacker_del(this,{$blacker.uid})" class="ml-5" style="text-decoration:none">
+							<i class="Hui-iconfont">&#xe6e2;</i>
+						</a>
+						{/equal}
+					</td>
+				</tr>
+				{/volist}
+				
+			</tbody>
+			
+		</table>
+		<div class="mt-20"> 
+			<span class="r">
+				<?php 
+					echo "<ul class='pagination'>";
+
+					$currentPage = intval($list->currentPage());
+					$totalpage = $list->lastPage();   
+
+					if($currentPage == 1){
+						echo "<li class='disabled'><span>&laquo;</span></li>";
+					}else{
+ 						$prePage = $currentPage - 1;
+						echo "<li onclick=\"searchByPage($prePage);\"><a>&laquo;</a></li>";
+					}
+					
+					for($i = 1;$i <= $totalpage;$i++){
+					    if($i == intval($list->currentPage())){
+							echo "<li class='active'><span>$i</span></li>";
+						}
+						else{
+							echo "<li onclick=\"searchByPage($i);\"><a>$i</a></li>";
+						}
+					}
+					
+					if($totalpage == 0 || $currentPage == $totalpage){
+						echo "<li class='disabled'><span>&raquo;</span></li>";
+					}else{
+ 						$nexPage = $currentPage + 1;
+						echo "<li onclick=\"searchByPage($nexPage);\"><a>&raquo;</a></li>";
+					}
+
+					echo "</ul>";
+				?>	
+			</span>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="http://xianzhiyan.com/static/lib/jquery/1.9.1/jquery.min.js"></script> 
+<script type="text/javascript" src="http://xianzhiyan.com/static/lib/layer/2.1/layer.js"></script>
+<script type="text/javascript" src="http://xianzhiyan.com/static/lib/laypage/1.2/laypage.js"></script> 
+<script type="text/javascript" src="http://xianzhiyan.com/static/lib/My97DatePicker/WdatePicker.js"></script> 
+<script type="text/javascript" src="http://xianzhiyan.com/static/lib/datatables/1.10.0/jquery.dataTables.min.js"></script> 
+<script type="text/javascript" src="http://xianzhiyan.com/static/h-ui/js/H-ui.js"></script> 
+<script type="text/javascript" src="http://xianzhiyan.com/static/h-ui.admin/js/H-ui.admin.js"></script> 
+<script type="text/javascript">
+$(function(){
+/* 	$('.table-sort tbody').on( 'click', 'tr', function () {
+		if ( $(this).hasClass('selected') ) {
+			$(this).removeClass('selected');
+		}
+		else {
+			table.$('tr.selected').removeClass('selected');
+			$(this).addClass('selected');
+		}
+	}); */
+});
+
+/*黑名单-添加*/
+function blacker_addpage(title,url,w,h){
+	layer_show(title,url,w,h,function(){
+		location.reload();
+	});
+}
+/*黑名单-查看*/
+/* function member_show(title,url,id,w,h){
+	layer_show(title,url,w,h);
+} */
+/*用户-停用*/
+/* function member_stop(obj,id){
+	layer.confirm('确认要停用吗？',function(index){
+		$(obj).parents("tr").find(".td-manage").prepend('<a style="text-decoration:none" onClick="member_start(this,id)" href="javascript:;" title="启用"><i class="Hui-iconfont">&#xe6e1;</i></a>');
+		$(obj).parents("tr").find(".td-status").html('<span class="label label-defaunt radius">已停用</span>');
+		$(obj).remove();
+		layer.msg('已停用!',{icon: 5,time:1000});
+	});
+} */
+
+/*黑名单-启用*/
+/* function member_start(obj,id){
+	layer.confirm('确认要启用吗？',function(index){
+		$(obj).parents("tr").find(".td-manage").prepend('<a style="text-decoration:none" onClick="member_stop(this,id)" href="javascript:;" title="停用"><i class="Hui-iconfont">&#xe631;</i></a>');
+		$(obj).parents("tr").find(".td-status").html('<span class="label label-success radius">已启用</span>');
+		$(obj).remove();
+		layer.msg('已启用!',{icon: 6,time:1000});
+	});
+} */
+/*黑名单-编辑*/
+function blacker_editpage(title,url,uid,w,h){
+	$.post("/bms/black/validateEditPomission",{'uid':uid}, function(data){
+		var result = data['result'];
+		if(result == "success"){
+			layer_show(title,url,w,h,function(){
+				location.reload();
+			});
+		}else{
+			layer.msg('您只能修改自己添加的黑名单',{icon:2,time:1000});	
+		}
+	});
+	
+}
+
+/*黑名单-删除*/
+function blacker_del(obj,id){
+	layer.confirm('确认要删除吗？',function(index){
+		$.post("/bms/black/delBlacker",{'id':id}, function(data){
+			var result = data['result'];
+			if(result == "success"){
+				layer.msg('删除成功!',{icon:1,time:1000});	
+				setTimeout(function(){
+					location.reload();
+    			},1000);
+			}else{
+				layer.msg('删除失败!请联系程技术总监',{icon:2,time:1000});	
+			}
+		});
+	});
+}
+function searchBlacker(){
+	var datemin = $('#datemin').val().trim();
+	var datemax = $('#datemax').val().trim();
+	var acountInfo = $('#acountInfo').val().trim();
+	location.href = "/bms/black/index?beginTime="+datemin+"&endTime="+datemax+"&acountInfo="+acountInfo;
+}
+
+function searchByPage(page){
+	var datemin = $('#datemin').val().trim();
+	var datemax = $('#datemax').val().trim();
+	var acountInfo = $('#acountInfo').val().trim();
+	location.href ="/bms/black/index?page="+page+"&beginTime="+datemin+"&endTime="+datemax+"&acountInfo="+acountInfo;
+}
+
+function checkBlacker_del(){
+	layer.confirm('确认要删除吗？',function(index){
+		var ids=new Array();//声明一个存放id的数组 
+		$("input:checkbox[name=id]:checked").each(function(i,item){ //由于复选框一般选中的是多个,所以可以循环输出 
+			ids.push(item.value);
+		}); 
+		if(ids.length<1) 
+			layer.msg('没有选中项！', {icon: 2,time:1000});
+		else{ 
+			$.post("/bms/black/delBlackers",{'ids':ids}, function(data){
+				var result = data['result'];
+				if(result == "success"){
+					layer.msg('删除成功!',{icon:1,time:1000});	
+					setTimeout(function(){
+						location.reload();
+	    			},1000);
+				}else{
+					layer.msg('删除失败!请联系程技术总监',{icon:2,time:1000});	
+				}
+			});
+		} 
+	});
+}
+</script> 
+</body>
+</html>
